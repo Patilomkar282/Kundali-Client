@@ -1,21 +1,29 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import '../css/Login.css';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    role: 'student'
   });
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
- // ... existing code ...
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
- const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
       const response = await fetch('http://localhost:5000/api/auth/login', {
@@ -23,97 +31,130 @@ const Login = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password
-        })
+        body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-      
-      if (response.ok) {
-        // Store the auth token in localStorage
-        localStorage.setItem('token', data.token);
-        // Navigate to dashboard on successful login
-        navigate('/dashboard');
-      } else {
-        setError(data.error || 'Login failed. Please try again.');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    } catch (err) {
-      setError('Something went wrong. Please try again later.');
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new TypeError("Received non-JSON response from server");
+      }
+
+      const data = await response.json();
+
+      if (data.user && data.token) {
+        // Store just the token, without 'Bearer' prefix
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        console.log('User Role:', data.user.role);
+        console.log('Stored Token:', data.token);
+      
+        if (data.user.role === 'student') {
+          navigate('/student/dashboard');
+        } else {
+          navigate('/');
+        }
+      } else {
+        throw new Error('Invalid response format from server');
+      }
+
+    } catch (error) {
+      console.error('Login error:', error);
+      setError(error.message || 'Failed to login. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
-// ... existing code ...
+  // If you need mock data for testing, create a separate function
+//   const handleMockLogin = () => {
+//     const mockResponse = {
+//       user: {
+//         id: '123',
+//         email: formData.email,
+//         role: formData.role,
+//         name: 'Test User'
+//       },
+//       token: 'mock-token-123'
+//     };
+
+//     // Store mock data with Bearer prefix
+//     const tokenWithBearer = `Bearer ${mockResponse.token}`;
+//     localStorage.setItem('token', tokenWithBearer);
+//     localStorage.setItem('user', JSON.stringify(mockResponse.user));
+
+//     if (mockResponse.user.role === 'student') {
+//       navigate('/student/dashboard');
+//     } else {
+//       navigate('/');
+//     }
+//   };
 
   return (
-    
-    <div className="login-page">
+    <div className="login-container">
+      <motion.div 
+        className="login-card"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2>Login</h2>
+        {error && <div className="error-message">{error}</div>}
         
-      <div className="login-container">
-        <motion.div 
-          className="login-box"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2>Welcome Back</h2>
-          <p className="login-subtitle">Please enter your credentials to login</p>
-
-          {error && <div className="error-message">{error}</div>}
-
-          <form onSubmit={handleSubmit} className="login-form">
-            <div className="form-group">
-              <label htmlFor="email">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                value={formData.password}
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
-                placeholder="Enter your password"
-                required
-              />
-            </div>
-
-            <div className="form-footer">
-              <label className="remember-me">
-                <input type="checkbox" /> Remember me
-              </label>
-              <a href="/forgot-password" className="forgot-password">
-                Forgot Password?
-              </a>
-            </div>
-
-            <motion.button
-              type="submit"
-              className="login-button"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Login
-            </motion.button>
-          </form>
-
-          <div className="signup-prompt">
-            <p>Don't have an account?</p>
-            <Link to="/#signup" className="signup-link">
-              Sign up now
-            </Link>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
           </div>
-        </motion.div>
-      </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="role">Role</label>
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+            >
+              <option value="student">Student</option>
+              <option value="recruiter">Recruiter</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
+          <motion.button
+            type="submit"
+            className="login-button"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            disabled={loading}
+          >
+            {loading ? 'Logging in...' : 'Login'}
+          </motion.button>
+        </form>
+      </motion.div>
     </div>
   );
 };

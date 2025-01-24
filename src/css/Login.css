@@ -1,52 +1,25 @@
-.login-page {
+.login-container {
     min-height: 100vh;
-    background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #f5f5f5;
     padding: 2rem;
   }
   
-  .login-container {
-    width: 100%;
-    max-width: 450px;
-    margin: 0 auto;
-  }
-  
-  .login-box {
+  .login-card {
     background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    padding: 3rem;
-    position: relative;
-    overflow: hidden;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
   }
   
-  .login-box::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #4299e1, #667eea);
-  }
-  
-  .login-box h2 {
-    font-size: 2rem;
-    color: #2d3748;
-    margin-bottom: 0.5rem;
+  .login-card h2 {
     text-align: center;
-  }
-  
-  .login-subtitle {
-    color: #718096;
-    text-align: center;
+    color: #333;
     margin-bottom: 2rem;
-  }
-  
-  .login-form {
-    margin-top: 2rem;
   }
   
   .form-group {
@@ -56,111 +29,61 @@
   .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    color: #4a5568;
-    font-weight: 500;
+    color: #666;
   }
   
-  .form-group input {
+  .form-group input,
+  .form-group select {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
     font-size: 1rem;
-    transition: all 0.3s ease;
-    color: #2d3748;
-    background: #f8fafc;
   }
   
-  .form-group input:focus {
+  .form-group input:focus,
+  .form-group select:focus {
     outline: none;
-    border-color: #4299e1;
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
-    background: white;
-  }
-  
-  .form-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-  
-  .remember-me {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #4a5568;
-    cursor: pointer;
-  }
-  
-  .forgot-password {
-    color: #4299e1;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.3s ease;
-  }
-  
-  .forgot-password:hover {
-    color: #2b6cb0;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
   }
   
   .login-button {
     width: 100%;
     padding: 1rem;
-    background: linear-gradient(135deg, #4299e1 0%, #667eea 100%);
+    background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: 600;
+    border-radius: 5px;
+    font-size: 1rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
   }
   
   .login-button:hover {
-    box-shadow: 0 4px 15px rgba(66, 153, 225, 0.4);
+    background-color: #45a049;
   }
   
-  .signup-prompt {
-    margin-top: 2rem;
-    text-align: center;
-    color: #4a5568;
-  }
-  
-  .signup-link {
-    color: #4299e1;
-    text-decoration: none;
-    font-weight: 600;
-    margin-left: 0.5rem;
-    transition: color 0.3s ease;
-  }
-  
-  .signup-link:hover {
-    color: #2b6cb0;
+  .login-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
   }
   
   .error-message {
-    background: #fff5f5;
-    color: #c53030;
+    background-color: #ffebee;
+    color: #c62828;
     padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
     text-align: center;
   }
   
-  /* Responsive Design */
   @media (max-width: 480px) {
-    .login-box {
-      padding: 2rem;
+    .login-container {
+      padding: 1rem;
     }
   
-    .login-box h2 {
-      font-size: 1.75rem;
-    }
-  
-    .form-footer {
-      flex-direction: column;
-      gap: 1rem;
-      align-items: flex-start;
+    .login-card {
+      padding: 1.5rem;
     }
   }
